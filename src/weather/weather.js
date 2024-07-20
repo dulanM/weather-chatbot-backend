@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
     }));
     res.send(forecast);
   } catch (error) {
-    res.status(500).send({ message: 'Getting error while fetching weather data!' });
+    res.status(500).send({ message: 'Getting an error while fetching weather data!' });
   }
 });
 
