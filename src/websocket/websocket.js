@@ -1,5 +1,4 @@
 const WebSocket = require('ws');
-const axios = require('axios');
 const { authenticateWebSocketConnection } = require('../middleware/authMiddleware');
 const { handleWeatherMessage, clearWeatherInterval } = require('../weather/weather');
 let clients = [];
@@ -13,7 +12,7 @@ function setupWebSocketServer(server) {
   });
 
   wss.on('connection', (ws, req) => {
-    const client = { ws, user: req.user.userName,location: null, intervalId: null };
+    const client = { ws, user: req.user.userName, location: null, intervalId: null };
     clients.push(client);
     console.log('Client connected!', req.user.userName);
 
@@ -24,13 +23,17 @@ function setupWebSocketServer(server) {
     });
 
     ws.on('message', async (message) => {
-      const data = JSON.parse(message);
-      switch (data.type) {
-        case 'weather':
-          handleWeatherMessage(client, data.payload);
-          break;
-        default:
-          break;
+      try {
+        const data = JSON.parse(message);
+        switch (data.type) {
+          case 'weather':
+            handleWeatherMessage(client, data.payload);
+            break;
+          default:
+            break;
+        }
+      } catch (error) {
+        client.ws.send(JSON.stringify({ error: 'Getting error when getting data from API'}));
       }
     });
   });
