@@ -12,7 +12,7 @@ const server = http.createServer(app);
 
 // Setup WebSocket server
 setupWebSocketServer(server);
-const port = process.env.port || 3001;
+const port = process.env.port || 3000;
 
 
 setupWebSocketServer(server);
