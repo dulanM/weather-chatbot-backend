@@ -1,21 +1,32 @@
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
-const verifyToken = (req, res, next) => {
-  const token = req.headers['authorization'];
-
-  if (!token) {
-    return res.status(403).send({ message: 'No token provided!' });
-  }
-
-  jwt.verify(token.split(' ')[1], SECRET_KEY, (err, decoded) => {
-    if (err) {
-      return res.status(500).send({ message: 'Authentication failed!' });
-    }
-
-    req.userId = decoded.id;
-    next();
+const verifyToken = (token) => {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(decoded);
+      }
+    });
   });
 };
 
-module.exports = verifyToken;
+const authenticateWebSocketConnection = async (info, done) => {
+  const token = new URLSearchParams(info.req.url.split('?')[1]).get('token');
+  if (!token) {
+    return done(false, 401, 'Unauthorized!');
+  }
+
+  try {
+    const decoded = await verifyToken(token);
+    info.req.user = decoded;
+    return done(true);
+  } catch (error) {
+    return done(false, 401, 'Unauthorized!');
+  }
+};
+
+module.exports = { authenticateWebSocketConnection };

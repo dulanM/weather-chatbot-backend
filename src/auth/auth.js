@@ -10,6 +10,11 @@ const users = [
     id: 1,
     userName: 'tom@gmail.com',
     password: bcrypt.hashSync('password', 8)
+  },
+  {
+    id: 2,
+    userName: 'jim@gmail.com',
+    password: bcrypt.hashSync('password', 8)
   }
 ];
 
@@ -25,8 +30,7 @@ router.post('/login', (req, res) => {
   if (!isPasswordValid) {
     return res.status(401).send({ message: 'Invalid credentials' });
   }
-
-  const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: '1h' });
+  const token = jwt.sign({ userName }, SECRET_KEY, { expiresIn: '1h' });
   res.send({ token });
 });
 

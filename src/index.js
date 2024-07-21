@@ -14,12 +14,7 @@ const port = process.env.port || 3000;
 app.use(bodyParser.json());
 app.use(cors())
 
-app.get('/api/hello', (req, res) => {
-    res.send({ message: 'Hello'});
-});
-
 app.use('/api/auth', authRouter);
-app.use('/api/weather', authMiddlware, weatherRouter);
 const server = app.listen(port, () => {
     console.log('server running...');
 });

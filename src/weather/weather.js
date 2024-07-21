@@ -1,29 +1,52 @@
 const express = require('express');
 const axios = require('axios');
 
-const router = express.Router();
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
-const WEATHER_API_HOST = process.env.WEATHER_API_HOST;
 
-router.get('/', async (req, res) => {
-  const location = req.query.location;
-  if (!location) {
-    return res.status(400).send({ message: 'Location is required!' });
+async function sendWeatherData(client) {
+  try {
+    const forecast = await getWeatherData(client.location);
+    client.ws.send(JSON.stringify(forecast));
+  } catch (error) {
+    client.ws.send(JSON.stringify({ error: error.message }));
   }
+}
 
+async function getWeatherData(location) {
   const url = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${location}&days=14`;
+
   try {
     const response = await axios.request(url);
-    const forecast = response.data.forecast.forecastday.map(day => ({
+    return response.data.forecast.forecastday.map(day => ({
       date: day.date,
       condition: day.day.condition.text,
       maxTemp: day.day.maxtemp_c,
       minTemp: day.day.mintemp_c
     }));
-    res.send(forecast);
   } catch (error) {
-    res.status(500).send({ message: 'Getting an error while fetching weather data!' });
+    console.error('Getting an error while fetching weather data!');
+    throw new Error('Getting an error while fetching weather data!');
   }
-});
+}
 
-module.exports = router;
+function handleWeatherMessage(client, payload) {
+  client.location = payload.location;
+
+  if (client.intervalId) {
+    clearInterval(client.intervalId);
+  }
+  sendWeatherData(client);
+
+  // set a new interval
+  client.intervalId = setInterval(() => {
+    sendWeatherData(client)
+  }, 30000);
+}
+
+function clearWeatherInterval(client) {
+  if (client.intervalId) {
+    clearInterval(client.intervalId);
+  }
+}
+
+module.exports = { handleWeatherMessage, clearWeatherInterval };
