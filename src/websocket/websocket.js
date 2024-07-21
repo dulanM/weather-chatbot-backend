@@ -24,16 +24,14 @@ function setupWebSocketServer(server) {
 
     ws.on('message', async (message) => {
       try {
-        const data = JSON.parse(message);
-        switch (data.type) {
-          case 'weather':
-            handleWeatherMessage(client, data.payload);
-            break;
-          default:
-            break;
+        const location = message.toString();
+        const client = clients.find(client => client.ws === ws);
+        if (client) {
+          client.location = location;
+          await handleWeatherMessage(client, location);
         }
       } catch (error) {
-        client.ws.send(JSON.stringify({ error: 'Getting error when getting data from API'}));
+        client.ws.send(JSON.stringify({ error: 'Getting error when getting data from API' }));
       }
     });
   });

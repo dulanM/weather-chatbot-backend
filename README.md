@@ -6,18 +6,13 @@ This is the backend for the Weather Chatbot application, built with Node.js, Exp
 
 Follow these steps to deploy the Node.js backend to Heroku using the terminal.
 
-### Prerequisites
-
-1. [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
-2. [Git](https://git-scm.com/)
-
 ### Step-by-Step Deployment
 
 1. **Clone the Repository**
 
    - Clone the repository from GitHub and navigate into the project directory:
      ```sh
-     git clone https://github.com/yourusername/weather-chatbot-backend.git
+     git clone https://github.com/dulanM/weather-chatbot-backend.git
      cd weather-chatbot-backend
      ```
 

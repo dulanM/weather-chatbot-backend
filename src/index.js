@@ -7,19 +7,17 @@ const http = require('http');
 
 const {setupWebSocketServer} = require('./websocket/websocket')
 const app = express();
-// Create HTTP server
-const server = http.createServer(app);
 
-// Setup WebSocket server
-setupWebSocketServer(server);
 const port = process.env.port || 3000;
 
 
-setupWebSocketServer(server);
+// setupWebSocketServer(server);
 app.use(bodyParser.json());
 app.use(cors())
 
 app.use('/api/auth', authRouter);
-server.listen(port, () => {
+const server = app.listen(port, () => {
     console.log('server running...');
 });
+
+setupWebSocketServer(server);

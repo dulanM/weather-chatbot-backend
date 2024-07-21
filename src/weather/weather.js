@@ -29,13 +29,14 @@ async function getWeatherData(location) {
   }
 }
 
-function handleWeatherMessage(client, payload) {
-  client.location = payload.location;
+async function handleWeatherMessage(client, location) {
+  client.location = location;
 
+  // If there is interval alredy clear it beacuse creating new interval there is new location to search
   if (client.intervalId) {
     clearInterval(client.intervalId);
   }
-  sendWeatherData(client);
+  await sendWeatherData(client);
 
   // set a new interval
   client.intervalId = setInterval(() => {
