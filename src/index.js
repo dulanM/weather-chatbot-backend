@@ -10,8 +10,6 @@ const app = express();
 
 const port = process.env.port || 3000;
 
-
-// setupWebSocketServer(server);
 app.use(bodyParser.json());
 app.use(cors())
 
